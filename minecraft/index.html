@@ -2,16 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mini Minecraft</title>
+  <title>Mini Minecraft (TS)</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #87CEEB; font-family: sans-serif; }
-    canvas { display: block; background: #2F4F4F; border: 1px solid #000; }
-    .ui { position: absolute; top: 10px; left: 10px; color: white; font-size: 16px; }
+    body { margin:0; overflow:hidden; background:#87CEEB; font-family:sans-serif; }
+    canvas { display:block; background:#2F4F4S; border:1px solid #000; }
+    .ui {
+      position:absolute; top:10px; left:10px;
+      color:#fff; font-size:16px;
+    }
   </style>
 </head>
+
 <body>
-  <div class="ui" id="stats">Health: 100 / Hunger: 0</div>
-  <canvas id="gameCanvas"></canvas>
+<div class="ui" id="stats">Health: 100 / Hunger: 0</div>
+<canvas id="gameCanvas"></canvas>
 
 <script type="module">
   // ==== CONFIG ====
@@ -20,7 +24,7 @@
   const FPS = 60;
   const PLAYER_SPEED = 4;
   const BLOCK_SIZE = 32;
-  const DAY_LENGTH = 10000; // milliseconds
+  const DAY_LENGTH = 10000;   // ms
   const NIGHT_LENGTH = 5000;
   const MOB_SPAWN_TIME = 15000;
 
@@ -31,13 +35,13 @@
   let gameLoopId;
 
   // ==== DOM ELEMENTS ====
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  const statsDiv = document.getElementById('stats');
+  const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+  const ctx   = canvas.getContext('2d') as CanvasContext;
+  const statsDiv = document.getElementById('stats') as HTMLElement;
 
   // ==== HELPERS ====
   function resize() {
-    canvas.width = WIDTH;
+    canvas.width  = WIDTH;
     canvas.height = HEIGHT;
   }
 
@@ -54,8 +58,8 @@
   function drawPlayer() {
     ctx.fillStyle = player.color;
     ctx.beginPath();
-    ctx.arc(player.x * BLOCK_SIZE + BLOCK_SIZE / 2, 
-              player.y * BLOCK_SIZE + BLOCK_SIZE / 2, 
+    ctx.arc(player.x * BLOCK_SIZE + BLOCK_SIZE / 2,
+              player.y * BLOCK_SIZE + BLOCK_SIZE / 2,
               10, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fill();
@@ -74,7 +78,7 @@
   }
 
   function updateMobs() {
-    const now = performance.now();
+    const now = performance.now;
     if (now - MOB_SPAWN_TIME > MOB_SPAWN_TIME) {
       spawnMob();
       MOB_SPAWN_TIME = now;
@@ -84,38 +88,31 @@
   // ==== CRAFTING ====
   function checkCraft(item, pos) {
     const foodItems = ['carrot', 'bread'];
-    if (foodItems.includes(item)) {
-      return true;
-    }
-    return false;
+    return foodItems.includes(item);
   }
 
   // ==== MAIN GAME LOOP ====
   function update() {
-    requestAnimationFrame(update);
+    requestAnimationFrame(update);          // <-- go to next frame
     updateMobs();
 
-    if (event.type === 'keydown') {
+    // ---- INPUT HANDLING -------------------------------------------------
+    if (event && event.type === 'keydown') {
       switch (event.key) {
         case 'W': player.x--; break;
-        case 'E': player.y--;
+        case 'E': player.y--; break;
         case 'S': player.color = "#2196F3"; break;
-        case 'A': break;
+        // 'A' does nothing
       }
     }
+    // ---------------------------------------------------------------------
 
     drawRect(player.x, player.y, player.color);
-  }
-
-  function main() {
-    resize();
-    window.addEventListener('keydown', update);
+    drawFood(food.x, food.y);
+    drawBlock(0, 0, "#555");          // optional ground
     updateMobs();
-    requestAnimationFrame(main);
+    requestAnimationFrame(draw);     // <-- go to next frame
   }
-
-  // ==== INITIAL SPAWN ====
-  setInterval(spawnMob, MOB_SPAWN_TIME);
 
   // ==== DRAW EARLY ====
   function draw() {
@@ -127,8 +124,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    main();
-    setInterval(draw, 100);
+    resize();
+    window.addEventListener('keydown', update);
+    requestAnimationFrame(draw);   // start the first frame
   });
 </script>
 </body>
