@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Minecraft</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #87CEEB; font-family: sans-serif; }
+    canvas { display: block; background: #2F4F4F; border: 1px solid #000; }
+    .ui { position: absolute; top: 10px; left: 10px; color: white; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="ui" id="stats">Health: 100 / Hunger: 0</div>
+  <canvas id="gameCanvas"></canvas>
+
+<script type="module">
+  // ==== CONFIG ====
+  const WIDTH = 800;
+  const HEIGHT = 600;
+  const FPS = 60;
+  const PLAYER_SPEED = 4;
+  const BLOCK_SIZE = 32;
+  const DAY_LENGTH = 10000; // milliseconds
+  const NIGHT_LENGTH = 5000;
+  const MOB_SPAWN_TIME = 15000;
+
+  // ==== GLOBALS ====
+  let player = { x: 50, y: 50, color: "#4CAF50" };
+  let food = { x: 300, y: 50, color: "#2196F3" };
+  let monsters = [];
+  let gameLoopId;
+
+  // ==== DOM ELEMENTS ====
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const statsDiv = document.getElementById('stats');
+
+  // ==== HELPERS ====
+  function resize() {
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+  }
+
+  function drawRect(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+  }
+
+  function drawBlock(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+  }
+
+  function drawPlayer() {
+    ctx.fillStyle = player.color;
+    ctx.beginPath();
+    ctx.arc(player.x * BLOCK_SIZE + BLOCK_SIZE / 2, 
+              player.y * BLOCK_SIZE + BLOCK_SIZE / 2, 
+              10, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fill();
+  }
+
+  function drawFood(x, y) {
+    ctx.fillStyle = food.color;
+    ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, 8, 16);
+  }
+
+  // ==== MOB SPAWNING ====
+  function spawnMob() {
+    const x = Math.floor(Math.random() * (WIDTH - 2 * BLOCK_SIZE)) + 1;
+    const y = Math.floor(Math.random() * (HEIGHT - 2 * BLOCK_SIZE)) + 1;
+    monsters.push({ x, y, color: "#8B4513" });
+  }
+
+  function updateMobs() {
+    const now = performance.now();
+    if (now - MOB_SPAWN_TIME > MOB_SPAWN_TIME) {
+      spawnMob();
+      MOB_SPAWN_TIME = now;
+    }
+  }
+
+  // ==== CRAFTING ====
+  function checkCraft(item, pos) {
+    const foodItems = ['carrot', 'bread'];
+    if (foodItems.includes(item)) {
+      return true;
+    }
+    return false;
+  }
+
+  // ==== MAIN GAME LOOP ====
+  function update() {
+    requestAnimationFrame(update);
+    updateMobs();
+
+    if (event.type === 'keydown') {
+      switch (event.key) {
+        case 'W': player.x--; break;
+        case 'E': player.y--;
+        case 'S': player.color = "#2196F3"; break;
+        case 'A': break;
+      }
+    }
+
+    drawRect(player.x, player.y, player.color);
+  }
+
+  function main() {
+    resize();
+    window.addEventListener('keydown', update);
+    updateMobs();
+    requestAnimationFrame(main);
+  }
+
+  // ==== INITIAL SPAWN ====
+  setInterval(spawnMob, MOB_SPAWN_TIME);
+
+  // ==== DRAW EARLY ====
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
+    drawFood(food.x, food.y);
+    updateMobs();
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    main();
+    setInterval(draw, 100);
+  });
+</script>
+</body>
+</html>
+
