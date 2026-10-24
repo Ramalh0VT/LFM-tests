@@ -15,8 +15,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
-# Dinosaur class (simplified)
-class Dinosaur:
+# Dinosaur class
+class dinosaur:
     def __init__(self):
         self.x = 100
         self.y = HEIGHT - 50
@@ -30,7 +30,7 @@ class Dinosaur:
 # Game loop
 running = True
 score = 0
-obstacle = Dinosaur()
+Dinosaur = dinosaur()
 
 while running:
     screen.fill(WHITE)
