@@ -21,6 +21,11 @@ function calculate(operator) {
                 prevValue *= currentValue;
                 break;
             case '/':
+                if (currentValue === 0) {
+                    displayValue = 'Error';
+                    updateDisplay();
+                    return;
+                }
                 prevValue /= currentValue;
                 break;
         }
