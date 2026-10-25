@@ -91,9 +91,7 @@ while running:
     cactus.move()
 
     # Check for collision
-    if dinosaur.x < cactus.x + cactus.width and dinosaur.x + 
-dinosaur.width > cactus.x and dinosaur.y < cactus.y + cactus.height and 
-dinosaur.y + dinosaur.height > cactus.y:
+    if dinosaur.x < cactus.x + cactus.width and dinosaur.x + dinosaur.width > cactus.x and dinosaur.y < cactus.y + cactus.height and dinosaur.y + dinosaur.height > cactus.y:
         game_over()
 
     # Draw background
